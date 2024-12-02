@@ -24,9 +24,11 @@ KUBE_TMUX_SYMBOL_DEFAULT="${KUBE_TMUX_SYMBOL_DEFAULT:-\u2388 }"
 KUBE_TMUX_SYMBOL_USE_IMG="${KUBE_TMUX_SYMBOL_USE_IMG:-false}"
 KUBE_TMUX_NS_ENABLE="${KUBE_TMUX_NS_ENABLE:-true}"
 KUBE_TMUX_DIVIDER="${KUBE_TMUX_DIVIDER-:}"
-KUBE_TMUX_SYMBOL_COLOR="${KUBE_TMUX_SYMBOL_COLOR-blue}"
-KUBE_TMUX_CTX_COLOR="${KUBE_TMUX_CTX_COLOR-red}"
-KUBE_TMUX_NS_COLOR="${KUBE_TMUX_NS_COLOR-cyan}"
+KUBE_TMUX_SYMBOL_COLOR="${KUBE_TMUX_SYMBOL_COLOR:-blue}"
+KUBE_TMUX_SYMBOL_COLOR="${KUBE_TMUX_SYMBOL_COLOR:-blue}"
+KUBE_TMUX_DIVIDER_COLOR="${KUBE_TMUX_DIVIDER_COLOR:-color250}"
+KUBE_TMUX_CONTEXT_COLOR="${KUBE_TMUX_CONTEXT_COLOR:-red}"
+KUBE_TMUX_NAMESPACE_COLOR="${KUBE_TMUX_NAMESPACE_COLOR:-cyan}"
 KUBE_TMUX_KUBECONFIG_CACHE="${KUBECONFIG}"
 KUBE_TMUX_UNAME=$(uname)
 KUBE_TMUX_LAST_TIME=0
@@ -144,21 +146,31 @@ kube_tmux() {
   _kube_tmux_update_cache
 
   local KUBE_TMUX
+  if [ ! -z "${1}" ]; then
+    KUBE_TMUX_DIVIDER_COLOR=${1}
+  fi
+  if [ ! -z "${2}" ]; then
+    KUBE_TMUX_CONTEXT_COLOR=${2}
+  fi
+  if [ ! -z "${3}" ]; then
+    KUBE_TMUX_NAMESPACE_COLOR=${3}
+  fi
+
 
   # Symbol
   if [[ "${KUBE_TMUX_SYMBOL_ENABLE}" == true ]]; then
-    KUBE_TMUX+="#[fg=blue]$(_kube_tmux_symbol)#[fg=colour${1}]"
+    KUBE_TMUX+="#[fg=${KUBE_TMUX_SYMBOL_COLOR}]$(_kube_tmux_symbol)"
   fi
 
   # Context
-  KUBE_TMUX+="#[fg=${2}]${KUBE_TMUX_CONTEXT}"
+  KUBE_TMUX+="#[fg=${KUBE_TMUX_CONTEXT_COLOR}]${KUBE_TMUX_CONTEXT}"
 
   # Namespace
   if [[ "${KUBE_TMUX_NS_ENABLE}" == true ]]; then
     if [[ -n "${KUBE_TMUX_DIVIDER}" ]]; then
-      KUBE_TMUX+="#[fg=colour250]${KUBE_TMUX_DIVIDER}"
+      KUBE_TMUX+="#[fg=${KUBE_TMUX_DIVIDER_COLOR}]${KUBE_TMUX_DIVIDER}"
     fi
-    KUBE_TMUX+="#[fg=${3}]${KUBE_TMUX_NAMESPACE}"
+    KUBE_TMUX+="#[fg=${KUBE_TMUX_NAMESPACE_COLOR}]${KUBE_TMUX_NAMESPACE}"
   fi
 
   echo "${KUBE_TMUX}"
